@@ -16,15 +16,15 @@ export default class GLUtils {
         if (!gl) {
             console.log('WebGL 2.0 is not supported on this device or browser! Please use another browser or device.');
             alert('WebGL 2.0 is not supported on this device or browser! Please use another browser or device.');
-            return;
+            return undefined;
         }
         return gl;
     }
 
     /**
      *
-     * @param {HTMLCanvasElement} gl
-     * @param {Array.<Number>} data
+     * @param {WebGL2RenderingContext} gl
+     * @param {Array.<number>} data
      * @returns {WebGLBuffer}
      */
     static CreateStaticVbo(gl, data) {
@@ -60,9 +60,9 @@ export default class GLUtils {
 
     /**
      * @param {WebGL2RenderingContext} gl
-     * @param {String} shaderStr
+     * @param {string} shaderStr
      * @param {WebGLProgram} program
-     * @param {GLenum} shaderType
+     * @param {number} shaderType
      */
     static AttachShader(gl, shaderStr, program, shaderType) {
         const shader = gl.createShader(shaderType);
@@ -76,11 +76,11 @@ export default class GLUtils {
 
     /**
      * @param {WebGL2RenderingContext} gl
-     * @param {Number} width
-     * @param {Number} height
-     * @param {GLenum} internalFormat
-     * @param {GLenum} format
-     * @param {GLenum} type
+     * @param {number} width
+     * @param {number} height
+     * @param {number} internalFormat
+     * @param {number} format
+     * @param {number} type
      * @returns {WebGLTexture}
      */
     static CreateTexture(gl, width, height, internalFormat, format, type) {
@@ -98,9 +98,9 @@ export default class GLUtils {
 
     /**
      * @param {WebGL2RenderingContext} gl
-     * @param {Number} width
-     * @param {Number} height
-     * @param {GLenum} type
+     * @param {number} width
+     * @param {number} height
+     * @param {number} type
      * @returns {WebGLTexture}
      */
     static CreateRGBTexture(gl, width, height, type) {
@@ -109,8 +109,8 @@ export default class GLUtils {
 
     /**
      * @param {WebGL2RenderingContext} gl
-     * @param {Number} width
-     * @param {Number} height
+     * @param {number} width
+     * @param {number} height
      * @returns {WebGLTexture}
      */
     static CreateRGBUnsignedByteTexture(gl, width, height) {
@@ -119,8 +119,8 @@ export default class GLUtils {
 
     /**
      * @param {WebGL2RenderingContext} gl
-     * @param {Number} width
-     * @param {Number} height
+     * @param {number} width
+     * @param {number} height
      * @returns {WebGLTexture}
      */
     static CreateRGBFloatTexture(gl, width, height) {
@@ -129,9 +129,9 @@ export default class GLUtils {
 
     /**
      * @param {WebGL2RenderingContext} gl
-     * @param {Number} width
-     * @param {Number} height
-     * @param {Number} num
+     * @param {number} width
+     * @param {number} height
+     * @param {number} num
      * @returns {Array.<WebGLTexture>}
      */
     static CreateRGBUnsignedByteTextures(gl, width, height, num) {
@@ -144,8 +144,8 @@ export default class GLUtils {
 
     /**
      * @param {WebGL2RenderingContext} gl
-     * @param {Number} width
-     * @param {Number} height
+     * @param {number} width
+     * @param {number} height
      * @returns {WebGLTexture}
      */
     static CreateRGBAUnsignedByteTexture(gl, width, height) {
@@ -154,8 +154,8 @@ export default class GLUtils {
 
     /**
      * @param {WebGL2RenderingContext} gl
-     * @param {Number} width
-     * @param {Number} height
+     * @param {number} width
+     * @param {number} height
      * @param {HTMLImageElement} image
      * @returns {WebGLTexture}
      */
@@ -174,9 +174,9 @@ export default class GLUtils {
 
     /**
      * @param {WebGL2RenderingContext} gl
-     * @param {Number} width
-     * @param {Number} height
-     * @param {Number} num
+     * @param {number} width
+     * @param {number} height
+     * @param {number} num
      * @returns {Array.<WebGLTexture>}
      */
     static CreateRGBAUnsignedByteTextures(gl, width, height, num) {
@@ -189,8 +189,8 @@ export default class GLUtils {
 
     /**
      * @param {WebGL2RenderingContext} gl
-     * @param {Number} width
-     * @param {Number} height
+     * @param {number} width
+     * @param {number} height
      * @returns {WebGLTexture}
      */
     static CreateRGBAFloatTexture(gl, width, height) {
@@ -199,9 +199,9 @@ export default class GLUtils {
 
     /**
      * @param {WebGL2RenderingContext} gl
-     * @param {Number} width
-     * @param {Number} height
-     * @param {Number} num
+     * @param {number} width
+     * @param {number} height
+     * @param {number} num
      * @returns {Array.<WebGLTexture>}
      */
     static CreateRGBAFloatTextures(gl, width, height, num) {
@@ -213,7 +213,7 @@ export default class GLUtils {
     }
 
     /**
-     * @returns {Array.<Number>}
+     * @returns {Array.<number>}
      */
     static get SQUARE() {
         return [

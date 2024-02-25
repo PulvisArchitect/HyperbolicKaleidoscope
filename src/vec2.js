@@ -2,19 +2,21 @@
  * @module Vec2
  */
 export default class Vec2 {
-    /** X value of the vector.
-     * @type {Number}
+    /**
+     * X value of the vector.
+     * @type {number}
      */
     x;
-    /** Y value of the vector.
-     * @type {Number}
+    /**
+     * Y value of the vector.
+     * @type {number}
      */
     y;
 
     /**
        class
-     * @param {Number} x
-     * @param {Number} y
+     * @param {number} x
+     * @param {number} y
      */
     constructor(x, y) {
         this.x = x;
@@ -60,7 +62,7 @@ export default class Vec2 {
 
     /**
      *
-     * @param {Vec2} v
+     * @param {number} k
      * @returns {Vec2}
      */
     scale(k) {
@@ -69,7 +71,7 @@ export default class Vec2 {
 
     /**
      *
-     * @returns {Number}
+     * @returns {number}
      */
     length() {
         return Math.sqrt(this.x * this.x + this.y * this.y);
@@ -77,7 +79,7 @@ export default class Vec2 {
 
     /**
      *
-     * @returns {Number}
+     * @returns {number}
      */
     lengthSq() {
         return (this.x * this.x + this.y * this.y);
@@ -85,7 +87,6 @@ export default class Vec2 {
 
     /**
      *
-     * @param {Vec2} v
      * @returns {Vec2}
      */
     normalize() {
@@ -95,11 +96,11 @@ export default class Vec2 {
     /**
      *
      * @param {Vec2} v
-     * @returns {Boolean}
+     * @returns {boolean}
      */
     eq(v) {
         return Math.abs(this.x - v.x) <= Vec2.EPSILON &&
-            Math.abs(this.y - v.y <= Vec2.EPSILON);
+            Math.abs(this.y - v.y) <= Vec2.EPSILON;
     }
 
     /**
@@ -123,7 +124,7 @@ export default class Vec2 {
      *
      * @param {Vec2} v1
      * @param {Vec2} v2
-     * @returns {Number}
+     * @returns {number}
      */
     static dot(v1, v2) {
         return v1.x * v2.x + v1.y * v2.y;
@@ -133,7 +134,7 @@ export default class Vec2 {
      *
      * @param {Vec2} v1
      * @param {Vec2} v2
-     * @returns {Number}
+     * @returns {number}
      */
     static distance(v1, v2) {
         const l = v1.sub(v2);
@@ -142,7 +143,7 @@ export default class Vec2 {
 
     /**
      *
-     * @returns {Number}
+     * @returns {number}
      */
     static get EPSILON() {
         return 0.00001;
@@ -150,7 +151,7 @@ export default class Vec2 {
 
     /**
      *
-     * @returns {Array.<Number>}
+     * @returns {Array.<number>}
      */
     getUniformArray() {
         return [this.x, this.y];

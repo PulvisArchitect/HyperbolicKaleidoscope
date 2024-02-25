@@ -1,9 +1,13 @@
 import Vec2 from './vec2.js';
 
 export default class Circle {
+    /** @type {Vec2} */
+    center;
+    /** @type {number} */
+    r;
     /**
      * @param {Vec2} center
-     * @param {float} r
+     * @param {number} r
      */
     constructor(center, r) {
         this.center = center;
@@ -13,6 +17,7 @@ export default class Circle {
     /**
      * Apply inversion to a given point
      * @param {Vec2} p
+     * @returns {Vec2}
      */
     invertOnPoint (p) {
         const r2 = this.r * this.r;
@@ -37,7 +42,7 @@ export default class Circle {
     /**
      * @param {Circle} c1
      * @param {Circle} c2
-     * @returns {[Circle, Circle]}
+     * @returns {[Vec2, Vec2]}
      */
     static getIntersection(c1, c2) {
         const d = c1.center.sub(c2.center);

@@ -1,7 +1,9 @@
 {
     "root": true,
-    "extends": "eslint:recommended",
+    "extends": ["eslint:recommended", "plugin:jsdoc/recommended"],
     "rules": {
+        "jsdoc/require-param-description": "off",
+        "jsdoc/require-returns-description": "off"
     },
     "env": {
         "es2022": true,
@@ -10,5 +12,6 @@
     },
     "parserOptions": {
         "sourceType": "module"
-    }
+    },
+    "plugins": ["jsdoc"]
 }

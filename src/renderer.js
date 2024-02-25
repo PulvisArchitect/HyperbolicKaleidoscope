@@ -1,10 +1,16 @@
 import GLUtils from './glUtils.js';
 import Vec2 from './vec2.js';
 
+/** @type {string} */
+// @ts-ignore
 const RENDER_VERTEX = require('./shader/render.vert');
+/** @type {string} */
+// @ts-ignore
 const RENDER_FRAGMENT = require('./shader/render.frag');
 
 export default class Renderer {
+    /** @type {Array<WebGLUniformLocation>} */
+    uniLocations;
     /**
      * @param {HTMLCanvasElement} canvas
      */
@@ -38,6 +44,10 @@ export default class Renderer {
         this.uniLocations.push(this.gl.getUniformLocation(this.renderProgram, 'u_scale'));
     }
 
+    /**
+     * @param {number} width
+     * @param {number} height
+     */
     setUniformValues(width, height) {
         let i = 0;
         this.gl.uniform2f(this.uniLocations[i++], width, height);

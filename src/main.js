@@ -1,7 +1,8 @@
 import Renderer from './renderer.js';
 
 window.addEventListener('load', () => {
-    const canvas = document.getElementById('canvas');
+    /** @type {HTMLCanvasElement} */
+    const canvas = document.querySelector('#canvas');
     const renderer = new Renderer(canvas);
 
     renderer.initialize();

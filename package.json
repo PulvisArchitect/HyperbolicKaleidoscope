@@ -11,5 +11,9 @@
         "release": "webpack --mode production",
         "build": "webpack --mode development",
         "start": "webpack serve"
+    },
+    "devDependencies": {
+        "eslint-plugin-jsdoc": "^48.1.0",
+        "typescript": "^5.3.3"
     }
 }
