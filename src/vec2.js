@@ -156,4 +156,32 @@ export default class Vec2 {
     getUniformArray() {
         return [this.x, this.y];
     }
+
+    /**
+     * @returns {Vec2}
+     */
+    get xx() {
+        return new Vec2(this.x, this.x);
+    }
+
+    /**
+     * @returns {Vec2}
+     */
+    get yy() {
+        return new Vec2(this.y, this.y);
+    }
+
+    /**
+     * @returns {Vec2}
+     */
+    get xy() {
+        return new Vec2(this.x, this.y);
+    }
+
+    /**
+     * @returns {Vec2}
+     */
+    get yx() {
+        return new Vec2(this.y, this.x);
+    }
 }

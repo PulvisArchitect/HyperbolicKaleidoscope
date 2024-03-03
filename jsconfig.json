@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
         "checkJs": true,
-        "target": "ES6",
+        "target": "ESNext",
         "moduleResolution": "node"
     },
-    "include": ["src/**/*", "../../../.emacs.d/backup/!home!soma!work!js!HyperbolicKaleidoscope!src!scene.js~", "../../../.emacs.d/backup/!home!soma!work!js!HyperbolicKaleidoscope!src!cameraTexture.js~"]
+    "include": ["src/**/*", "../../../.emacs.d/backup/!home!soma!work!js!HyperbolicKaleidoscope!src!hyperbolicTessellationBender.js~"]
 }

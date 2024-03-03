@@ -47,9 +47,10 @@ export default class Circle {
     static getIntersection(c1, c2) {
         const d = c1.center.sub(c2.center);
         const dot = Vec2.dot(d, d);
-        const a = Math.pow((dot + c2.r * c2.r - c1.r * c1.r) / 2, 2);
-        if (dot * c2.r * c2.r - a < 2) throw new Error('Unable to compute intersections');
-        const numR = Math.sqrt(dot * c2.r * c2.r - a);
+        const a = (dot + c2.r * c2.r - c1.r * c1.r) / 2;
+        const a2 = a * a;
+        if (dot * c2.r * c2.r - a2 < 0) throw new Error('Unable to compute intersections');
+        const numR = Math.sqrt(dot * c2.r * c2.r - a2);
         return [new Vec2((a * d.x + d.y * numR) / dot + c2.center.x, (a * d.y - d.x * numR) / dot + c2.center.y),
                 new Vec2((a * d.x - d.y * numR) / dot + c2.center.x, (a * d.y + d.x * numR) / dot + c2.center.y)];
     }

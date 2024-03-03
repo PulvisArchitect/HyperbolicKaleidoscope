@@ -2,16 +2,29 @@
 precision highp float;
 
 uniform vec2 u_resolution;
+uniform sampler2D u_cameraTexture;
+uniform vec2 u_cameraResolution;
 uniform vec2 u_translation;
 uniform float u_scale;
+uniform vec3 u_circle1;
+uniform vec3 u_circle2;
 
-const float DISPLAY_GAMMA_COEFF = 1. / 2.2;
+const float GAMMA = 2.2;
+const float DISPLAY_GAMMA_COEFF = 1. / GAMMA;
 vec4 gammaCorrect(vec4 rgba) {
     return vec4((min(pow(rgba.r, DISPLAY_GAMMA_COEFF), 1.)),
                 (min(pow(rgba.g, DISPLAY_GAMMA_COEFF), 1.)),
                 (min(pow(rgba.b, DISPLAY_GAMMA_COEFF), 1.)),
                 rgba.a);
 }
+
+vec4 deGamma(vec4 rgba) {
+    return vec4((min(pow(rgba.r, GAMMA), 1.)),
+                (min(pow(rgba.g, GAMMA), 1.)),
+                (min(pow(rgba.b, GAMMA), 1.)),
+                rgba.a);
+}
+
 
 vec3 hsv2rgb(const float h, const float s, const float v){
     vec3 c = vec3(h, s, v);
@@ -35,8 +48,6 @@ vec2 circleInversion(const vec2 pos, const vec3 circle){
     return (p * circle.z * circle.z)/(d * d) + circle.xy;
 }
 
-const vec3 c3 = vec3(173.17, 0, 141.3);
-const vec3 c4 = vec3(0, 173.17, 141.3);
 const int MAX_ITERATIONS = 20;
 int iis(vec2 pos) {
     int numInversions = 0;
@@ -50,12 +61,12 @@ int iis(vec2 pos) {
             pos *= vec2(1, -1);
             loopEnd = false;
             numInversions++;
-        } else if (distance(pos, c3.xy) < c3.z) {
-            pos = circleInversion(pos, c3);
+        } else if (distance(pos, u_circle1.xy) < u_circle1.z) {
+            pos = circleInversion(pos, u_circle1);
             loopEnd = false;
             numInversions++;
-        } else if (distance(pos, c4.xy) < c4.z) {
-            pos = circleInversion(pos, c4);
+        } else if (distance(pos, u_circle2.xy) < u_circle2.z) {
+            pos = circleInversion(pos, u_circle2);
             loopEnd = false;
             numInversions++;
         }
@@ -75,6 +86,8 @@ void main() {
         position = position * u_scale;
         position += u_translation;
 
+        //sum += texture(u_cameraTexture, gl_FragCoord.xy / u_cameraResolution);
+        
         int numInversions = iis(position);
         if(mod(float(numInversions), 2.0) == 0.) {
             sum += vec4(hsv2rgb(0.0, 1., 1.), 1);

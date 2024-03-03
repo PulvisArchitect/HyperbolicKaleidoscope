@@ -1,4 +1,5 @@
 import GLUtils from './glUtils.js';
+import Scene from './scene.js';
 import Vec2 from './vec2.js';
 
 /** @type {string} */
@@ -17,9 +18,6 @@ export default class Renderer {
     constructor(canvas) {
         this.canvas = canvas;
         this.isRendering = false;
-
-        this.translation = new Vec2(0, 0);
-        this.scale = 200;
     }
 
     initialize() {
@@ -40,8 +38,6 @@ export default class Renderer {
     initializeUniormLocations() {
         this.uniLocations = [];
         this.uniLocations.push(this.gl.getUniformLocation(this.renderProgram, 'u_resolution'));
-        this.uniLocations.push(this.gl.getUniformLocation(this.renderProgram, 'u_translation'));
-        this.uniLocations.push(this.gl.getUniformLocation(this.renderProgram, 'u_scale'));
     }
 
     /**
@@ -51,14 +47,16 @@ export default class Renderer {
     setUniformValues(width, height) {
         let i = 0;
         this.gl.uniform2f(this.uniLocations[i++], width, height);
-        this.gl.uniform2f(this.uniLocations[i++], this.translation.x, this.translation.y);
-        this.gl.uniform1f(this.uniLocations[i++], this.scale);
     }
 
-    render() {
+    /**
+     * @param {Scene} scene
+     */
+    render(scene) {
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         this.gl.useProgram(this.renderProgram);
         this.setUniformValues(this.canvas.width, this.canvas.height);
+        scene.setUniformValues(this.gl);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
         this.gl.vertexAttribPointer(this.renderVAttrib, 2,
                                     this.gl.FLOAT, false, 0, 0);
