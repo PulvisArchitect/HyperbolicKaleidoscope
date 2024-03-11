@@ -8,6 +8,8 @@ export default class HyperbolicTessellation {
     isect1;
     /** @type {Vec2} */
     isect2;
+    /** @type {Vec2} */
+    corner;
     constructor() {
         this.circle1 = new Circle(new Vec2(1.2631, 0), 0.771643);
         this.circle2 = new Circle(new Vec2(0, 1.2631), 0.771643);
@@ -36,6 +38,7 @@ export default class HyperbolicTessellation {
         console.log(this.c1, this.c2);
         [this.isect1, this.isect2] = Circle.getIntersection(this.c1, this.c2);
         console.log(this.isect1, this.isect2);
+        this.corner = this.isect1.length() < this.isect2.length() ? this.isect1 : this.isect2;
     }
 
     /**

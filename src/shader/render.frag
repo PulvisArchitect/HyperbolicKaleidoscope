@@ -8,6 +8,7 @@ uniform vec2 u_translation;
 uniform float u_scale;
 uniform vec3 u_circle1;
 uniform vec3 u_circle2;
+uniform vec2 u_cornerUpperRight;
 
 const float GAMMA = 2.2;
 const float DISPLAY_GAMMA_COEFF = 1. / GAMMA;
@@ -49,16 +50,19 @@ vec2 circleInversion(const vec2 pos, const vec3 circle){
 }
 
 const int MAX_ITERATIONS = 20;
-int iis(vec2 pos) {
+vec2 iis(vec2 pos, out bool isOuter) {
     int numInversions = 0;
+    vec3 c3 = vec3(-u_circle1.xy, u_circle1.z);
+    vec3 c4 = vec3(-u_circle2.xy, u_circle2.z);
+    isOuter = false;
     for(int i = 0 ; i < MAX_ITERATIONS ; i++){
         bool loopEnd = true;
-        if(pos.x < 0.) {
-            pos *= vec2(-1, 1);
+        if(distance(pos, c3.xy) < c3.z) {
+            pos = circleInversion(pos, c3);
             loopEnd = false;
             numInversions++;
-        } else if (pos.y < 0.) {
-            pos *= vec2(1, -1);
+        } else if (distance(pos, c4.xy) < c4.z) {
+            pos = circleInversion(pos, c4);
             loopEnd = false;
             numInversions++;
         } else if (distance(pos, u_circle1.xy) < u_circle1.z) {
@@ -73,7 +77,10 @@ int iis(vec2 pos) {
 
         if(loopEnd) break;
     }
-    return numInversions;
+    if(length(pos) > 1.5) {
+        isOuter = true;
+    }
+    return pos;
 }
 
 const float MAX_SAMPLES = 100.;
@@ -81,18 +88,46 @@ out vec4 outColor;
 void main() {
     vec4 sum = vec4(0);
     float ratio = u_resolution.x / u_resolution.y / 2.0;
+    vec2 cornerLowerLeft = -u_cornerUpperRight;
+    vec2 tileSize = u_cornerUpperRight - cornerLowerLeft;
+    //  sum = texture(u_cameraTexture, abs((position - cornerLowerLeft) / size));
+    float cameraAspect = u_cameraResolution.y / u_cameraResolution.x;
+    float tileAspect = tileSize.y / tileSize.x;
+    vec2 cameraSizeOnScreen;
+    vec2 offset;
+    if(tileAspect >= cameraAspect) {
+        // 幅を1としてときにタイルの方が高さが大きい
+        // 横方向をクリップ
+        //cameraWidth = u_cameraResolution.x * (tileSize.x / tileSize.y);
+        //cameraHeight = u_cameraResolution.y;
+        //offsetX = (u_cameraResolution.x - cameraWidth) / 2.;
+        cameraSizeOnScreen = vec2(tileSize.y * (u_cameraResolution.x / u_cameraResolution.y), tileSize.y);
+        offset = vec2((cameraSizeOnScreen.x - tileSize.x) * 0.5, 0);
+    } else {
+        // 幅を1としてときに画像の方が高さが大きい
+        // 縦方向でクリップ
+        //cameraWidth = u_cameraResolution.x;
+        //cameraHeight = u_cameraResolution.x * tileAspect;
+        //offsetY = (u_cameraResolution.y - cameraHeight) / 2.;
+    }
     for(float i = 0.; i < MAX_SAMPLES; i++){
         vec2 position = ((gl_FragCoord.xy + rand2n(gl_FragCoord.xy, i)) / u_resolution.yy ) - vec2(ratio, 0.5);
         position = position * u_scale;
         position += u_translation;
 
         //sum += texture(u_cameraTexture, gl_FragCoord.xy / u_cameraResolution);
-        
-        int numInversions = iis(position);
-        if(mod(float(numInversions), 2.0) == 0.) {
-            sum += vec4(hsv2rgb(0.0, 1., 1.), 1);
+
+        vec2 cornerLowerLeft = -u_cornerUpperRight;
+        vec2 tileSize = u_cornerUpperRight - cornerLowerLeft;
+        //  sum = texture(u_cameraTexture, abs((position - cornerLowerLeft) / size));
+        float cameraAspect = u_cameraResolution.y / u_cameraResolution.x;
+        float tileAspect = tileSize.y / tileSize.x;
+        bool isOuter;
+        vec2 pos = iis(position, isOuter);
+        if(isOuter) {
+            sum += vec4(0, 0, 0, 1);
         } else {
-            sum += vec4(hsv2rgb(0.5, 1., 1.), 1);
+            sum += texture(u_cameraTexture, 1.0 - ((pos - cornerLowerLeft + offset) / cameraSizeOnScreen));
         }
     }
     

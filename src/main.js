@@ -4,6 +4,14 @@ import Scene from './scene.js';
 window.addEventListener('load', () => {
     /** @type {HTMLCanvasElement} */
     const canvas = document.querySelector('#canvas');
+    const resizeCanvas = () => {
+        const parent = canvas.parentElement;
+        canvas.style.width = parent.clientWidth + 'px';
+        canvas.style.height = parent.clientHeight + 'px';
+        canvas.width = parent.clientWidth;
+        canvas.height = parent.clientHeight;
+    }
+    resizeCanvas();
     const renderer = new Renderer(canvas);
     const scene = new Scene();
 
@@ -16,12 +24,10 @@ window.addEventListener('load', () => {
         window.requestAnimationFrame(render);
     }
     render();
-});
 
-// resizeCanvas() {
-//     const parent = this.canvas.parentElement;
-//     this.canvas.style.width = parent.clientWidth + 'px';
-//     this.canvas.style.height = parent.clientHeight + 'px';
-//     this.canvas.width = parent.clientWidth * this.pixelRatio;
-//     this.canvas.height = parent.clientHeight * this.pixelRatio;
-// }
+    let resizeTimer = setTimeout(resizeCanvas, 100);
+    window.addEventListener('resize', () => {
+        window.clearTimeout(resizeTimer);
+        window.setTimeout(resizeCanvas, 500);
+    });
+});

@@ -1,7 +1,7 @@
 const path = require('path');
 
 const SRC_DIR = path.resolve('./src');
-const DST_DIR = path.resolve('./public')
+const DST_DIR = path.resolve('./docs')
 module.exports = () => ({
     entry: [`${SRC_DIR}/main.js`],
     output: {

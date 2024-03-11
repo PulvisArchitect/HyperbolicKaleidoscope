@@ -9,7 +9,7 @@ export default class Scene {
         this.hyperbolicTessellation = new HyperbolicTessellation();
 
         this.translation = new Vec2(0, 0);
-        this.scale = 5;
+        this.scale = 2;
     }
 
     /**
@@ -29,6 +29,8 @@ export default class Scene {
 
         this.uniLocations.push(gl.getUniformLocation(program, 'u_circle1'));
         this.uniLocations.push(gl.getUniformLocation(program, 'u_circle2'));
+
+        this.uniLocations.push(gl.getUniformLocation(program, 'u_cornerUpperRight'));
     }
 
     /**
@@ -61,5 +63,11 @@ export default class Scene {
             this.hyperbolicTessellation.c2.center.x,
             this.hyperbolicTessellation.c2.center.y,
             this.hyperbolicTessellation.c2.r);
+
+        this.gl.uniform2f(
+            this.uniLocations[i++],
+            this.hyperbolicTessellation.corner.x,
+            this.hyperbolicTessellation.corner.y
+        );
     }
 }
