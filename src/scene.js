@@ -9,7 +9,7 @@ export default class Scene {
         this.hyperbolicTessellation = new HyperbolicTessellation();
 
         this.translation = new Vec2(0, 0);
-        this.scale = 2;
+        this.scale = 4.5;
     }
 
     /**
@@ -31,6 +31,22 @@ export default class Scene {
         this.uniLocations.push(gl.getUniformLocation(program, 'u_circle2'));
 
         this.uniLocations.push(gl.getUniformLocation(program, 'u_cornerUpperRight'));
+    }
+
+    /**
+     * @param {number} elapsedTimeMillis
+     */
+    animate(elapsedTimeMillis) {
+        let t = elapsedTimeMillis / 100;
+        const limit = 617;
+        t = t % limit * 2;
+        if(t >= limit) {
+            t = limit - (t - limit);
+        }
+        //t = 617
+        //console.log(t);
+        this.hyperbolicTessellation.bendY = - t / 1000;
+        this.hyperbolicTessellation.compute();
     }
 
     /**

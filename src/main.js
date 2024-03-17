@@ -18,13 +18,15 @@ window.addEventListener('load', () => {
     renderer.initialize();
     scene.initialize(renderer.gl, renderer.renderProgram);
 
+    const startTime = Date.now();
     const render = () => {
+        scene.animate(Date.now() - startTime);
         scene.onUpdate(renderer.gl);
         renderer.render(scene);
         window.requestAnimationFrame(render);
     }
     render();
-
+3
     let resizeTimer = setTimeout(resizeCanvas, 100);
     window.addEventListener('resize', () => {
         window.clearTimeout(resizeTimer);

@@ -55,24 +55,45 @@ vec2 iis(vec2 pos, out bool isOuter) {
     vec3 c3 = vec3(-u_circle1.xy, u_circle1.z);
     vec3 c4 = vec3(-u_circle2.xy, u_circle2.z);
     isOuter = false;
+
+    float x = 0.57735;
+    bool revC2 = false;
+    if(x > u_circle2.x){
+        revC2 = true;
+    }
     for(int i = 0 ; i < MAX_ITERATIONS ; i++){
         bool loopEnd = true;
         if(distance(pos, c3.xy) < c3.z) {
             pos = circleInversion(pos, c3);
             loopEnd = false;
             numInversions++;
-        } else if (distance(pos, c4.xy) < c4.z) {
-            pos = circleInversion(pos, c4);
-            loopEnd = false;
-            numInversions++;
         } else if (distance(pos, u_circle1.xy) < u_circle1.z) {
             pos = circleInversion(pos, u_circle1);
             loopEnd = false;
             numInversions++;
-        } else if (distance(pos, u_circle2.xy) < u_circle2.z) {
-            pos = circleInversion(pos, u_circle2);
-            loopEnd = false;
-            numInversions++;
+        }
+        if(revC2) {
+            if (distance(pos, u_circle2.xy) > u_circle2.z) {
+                pos = circleInversion(pos, u_circle2);
+                loopEnd = false;
+                numInversions++;
+            }
+            if (distance(pos, c4.xy) > c4.z) {
+                pos = circleInversion(pos, c4);
+                loopEnd = false;
+                numInversions++;
+            }       
+        } else {
+            if (distance(pos, u_circle2.xy) < u_circle2.z) {
+                pos = circleInversion(pos, u_circle2);
+                loopEnd = false;
+                numInversions++;
+            }
+            if (distance(pos, c4.xy) < c4.z) {
+                pos = circleInversion(pos, c4);
+                loopEnd = false;
+                numInversions++;
+            }    
         }
 
         if(loopEnd) break;
@@ -109,12 +130,23 @@ void main() {
         //cameraWidth = u_cameraResolution.x;
         //cameraHeight = u_cameraResolution.x * tileAspect;
         //offsetY = (u_cameraResolution.y - cameraHeight) / 2.;
+        cameraSizeOnScreen = vec2(tileSize.x, tileSize.x * (u_cameraResolution.y / u_cameraResolution.x));
+        offset = vec2(0, (cameraSizeOnScreen.y - tileSize.y) * 0.5);
     }
     for(float i = 0.; i < MAX_SAMPLES; i++){
         vec2 position = ((gl_FragCoord.xy + rand2n(gl_FragCoord.xy, i)) / u_resolution.yy ) - vec2(ratio, 0.5);
         position = position * u_scale;
         position += u_translation;
 
+        // if(distance(position, u_circle1.xy) < u_circle1.z) {
+        //     sum += vec4(1, 0, 0, 1);
+        //     continue;
+        // }
+        // if(distance(position, u_circle2.xy) < u_circle2.z) {
+        //     sum += vec4(1, 0, 0, 1);
+        //     continue;
+        // }
+        
         //sum += texture(u_cameraTexture, gl_FragCoord.xy / u_cameraResolution);
 
         vec2 cornerLowerLeft = -u_cornerUpperRight;
@@ -127,7 +159,9 @@ void main() {
         if(isOuter) {
             sum += vec4(0, 0, 0, 1);
         } else {
-            sum += texture(u_cameraTexture, 1.0 - ((pos - cornerLowerLeft + offset) / cameraSizeOnScreen));
+            vec2 uv = 1.0 - ((pos - cornerLowerLeft + offset) / cameraSizeOnScreen);
+            //sum += vec4(uv, 0, 1);
+            sum += texture(u_cameraTexture, uv);
         }
     }
     

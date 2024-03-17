@@ -10,12 +10,15 @@ export default class HyperbolicTessellation {
     isect2;
     /** @type {Vec2} */
     corner;
+    bendX = 0;
+    bendY = 0;
     constructor() {
         this.circle1 = new Circle(new Vec2(1.2631, 0), 0.771643);
         this.circle2 = new Circle(new Vec2(0, 1.2631), 0.771643);
+        this.compute();
+    }
 
-        this.bendX = 0;
-        this.bendY = 0;//-0.6;
+    compute() {
         this.x = 0.57735;
         this.y = 0.57735;
         const xRotate = [1, 0, 0,
@@ -35,10 +38,15 @@ export default class HyperbolicTessellation {
                            new Vec3(this.x, 0, Math.sqrt(1. - this.x * this.x))),
             this.applyMat3(yRotate,
                            new Vec3(this.x, 0, -Math.sqrt(1. - this.x * this.x))));
-        console.log(this.c1, this.c2);
         [this.isect1, this.isect2] = Circle.getIntersection(this.c1, this.c2);
-        console.log(this.isect1, this.isect2);
+        if(this.isect1.x > this.isect2.x) {
+            const tmp = new Vec2(this.isect1.x, this.isect1.y);
+            this.isect1 = this.isect2;
+            this.isect2 = tmp;
+        }
+        console.log(this.c1, this.c2);
         this.corner = this.isect1.length() < this.isect2.length() ? this.isect1 : this.isect2;
+        console.log(this.isect1, this.isect2, this.corner);
     }
 
     /**

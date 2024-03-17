@@ -32,7 +32,7 @@ module.exports = () => ({
 
     devServer: {
         static: {
-            directory: 'public',
+            directory: DST_DIR,
         },
         port: 9193
     }
