@@ -4,5 +4,5 @@
         "target": "ESNext",
         "moduleResolution": "node"
     },
-    "include": ["src/**/*", "../../../.emacs.d/backup/!home!soma!work!js!HyperbolicKaleidoscope!src!hyperbolicTessellationBender.js~"]
+    "include": ["src/**/*"]
 }

@@ -44,9 +44,9 @@ export default class HyperbolicTessellation {
             this.isect1 = this.isect2;
             this.isect2 = tmp;
         }
-        console.log(this.c1, this.c2);
+        //console.log(this.c1, this.c2);
         this.corner = this.isect1.length() < this.isect2.length() ? this.isect1 : this.isect2;
-        console.log(this.isect1, this.isect2, this.corner);
+        //console.log(this.isect1, this.isect2, this.corner);
     }
 
     /**

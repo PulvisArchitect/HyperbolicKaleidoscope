@@ -14,7 +14,6 @@ export default class CameraTexture {
     
     constructor() {
         this.video = document.createElement('video');
-        this.isPlaying = false;
     }
 
     /**
@@ -25,7 +24,6 @@ export default class CameraTexture {
         if (navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices.getUserMedia(media).then(
                 (localMediaStream) => {
-                    this.video = document.createElement('video');
                     this.video.srcObject = localMediaStream;
                     const canplayListener = () => {
                         this.video.play();

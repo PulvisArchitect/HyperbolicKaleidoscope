@@ -1,29 +1,38 @@
 import CameraTexture from './cameraTexture.js';
 import HyperbolicTessellation from './hyperbolicTessellationBender.js';
 import Vec2 from './vec2.js';
+import VideoFaceDetector from './videoFaceDetector.js';
 
 export default class Scene {
+    /** @type {Array<import("@mediapipe/tasks-vision").Detection>} */
+    detectedFaces = [];
     constructor() {
         this.uniLocations = [];
         this.cameraTexture = new CameraTexture();
         this.hyperbolicTessellation = new HyperbolicTessellation();
+        this.videoFaceDetector = new VideoFaceDetector(this.cameraTexture.video);
 
         this.translation = new Vec2(0, 0);
         this.scale = 4.5;
+    }
+
+    processDetection() {
+        
     }
 
     /**
      * @param {WebGL2RenderingContext} gl
      * @param {WebGLProgram} program
      */
-    initialize(gl, program) {
+    async initialize(gl, program) {
         this.gl = gl;
         this.cameraTexture.connectToCamera(gl);
+        await this.videoFaceDetector.initialize();
 
         this.uniLocations = [];
         this.uniLocations.push(gl.getUniformLocation(program, 'u_translation'));
         this.uniLocations.push(gl.getUniformLocation(program, 'u_scale'));
-        
+
         this.uniLocations.push(gl.getUniformLocation(program, 'u_cameraTexture'));
         this.uniLocations.push(gl.getUniformLocation(program, 'u_cameraResolution'));
 
@@ -54,6 +63,9 @@ export default class Scene {
      */
     onUpdate(gl) {
         this.cameraTexture.updateTexture(gl);
+        if(this.cameraTexture.isPlayingVideo) {
+            this.detectedFaces = this.videoFaceDetector.detect();
+        }
     }
 
     /**
@@ -63,7 +75,7 @@ export default class Scene {
         let i = 0;
         this.gl.uniform2f(this.uniLocations[i++], this.translation.x, this.translation.y);
         this.gl.uniform1f(this.uniLocations[i++], this.scale);
-        
+
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, this.cameraTexture.texture);
         this.gl.uniform1i(this.uniLocations[i++], 0);
