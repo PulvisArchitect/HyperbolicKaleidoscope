@@ -9,6 +9,7 @@ uniform float u_scale;
 uniform vec3 u_circle1;
 uniform vec3 u_circle2;
 uniform vec2 u_cornerUpperRight;
+uniform sampler2D u_videoFrames[5];
 
 const float GAMMA = 2.2;
 const float DISPLAY_GAMMA_COEFF = 1. / GAMMA;
@@ -50,8 +51,7 @@ vec2 circleInversion(const vec2 pos, const vec3 circle){
 }
 
 const int MAX_ITERATIONS = 20;
-vec2 iis(vec2 pos, out bool isOuter) {
-    int numInversions = 0;
+vec2 iis(vec2 pos, out bool isOuter, out int numInversions) {
     vec3 c3 = vec3(-u_circle1.xy, u_circle1.z);
     vec3 c4 = vec3(-u_circle2.xy, u_circle2.z);
     isOuter = false;
@@ -82,7 +82,7 @@ vec2 iis(vec2 pos, out bool isOuter) {
                 pos = circleInversion(pos, c4);
                 loopEnd = false;
                 numInversions++;
-            }       
+            }
         } else {
             if (distance(pos, u_circle2.xy) < u_circle2.z) {
                 pos = circleInversion(pos, u_circle2);
@@ -93,7 +93,7 @@ vec2 iis(vec2 pos, out bool isOuter) {
                 pos = circleInversion(pos, c4);
                 loopEnd = false;
                 numInversions++;
-            }    
+            }
         }
 
         if(loopEnd) break;
@@ -146,7 +146,7 @@ void main() {
         //     sum += vec4(1, 0, 0, 1);
         //     continue;
         // }
-        
+
         //sum += texture(u_cameraTexture, gl_FragCoord.xy / u_cameraResolution);
 
         vec2 cornerLowerLeft = -u_cornerUpperRight;
@@ -155,15 +155,29 @@ void main() {
         float cameraAspect = u_cameraResolution.y / u_cameraResolution.x;
         float tileAspect = tileSize.y / tileSize.x;
         bool isOuter;
-        vec2 pos = iis(position, isOuter);
+        int numInversions;
+        vec2 pos = iis(position, isOuter, numInversions);
         if(isOuter) {
             sum += vec4(0, 0, 0, 1);
         } else {
             vec2 uv = 1.0 - ((pos - cornerLowerLeft + offset) / cameraSizeOnScreen);
             //sum += vec4(uv, 0, 1);
-            sum += texture(u_cameraTexture, uv);
+            if(numInversions == 0) {
+                sum += texture(u_cameraTexture, uv);
+            } else if(numInversions == 1){
+                sum += texture(u_videoFrames[0], uv);
+            } else if(numInversions == 2){
+                sum += texture(u_videoFrames[1], uv);
+            } else if(numInversions == 3){
+                sum += texture(u_videoFrames[2], uv);
+            } else if(numInversions == 4){
+                sum += texture(u_videoFrames[3], uv);
+            } else if(numInversions >= 5){
+                sum += texture(u_videoFrames[4], uv);
+            }
+
         }
     }
-    
+
     outColor = sum / MAX_SAMPLES;
 }

@@ -35,7 +35,7 @@ export default class Scene {
         const defaultScale = 4.5;
 
         this.faceRatio = (Math.round(this.faceRatio * 100) / 100);
-        console.log(this.faceRatio);
+        //console.log(this.faceRatio);
         const targetScale = defaultScale - 5 * ((this.faceRatio - 0.3));
 
         // face scaleと対応するスケール基準値を設定しておく
@@ -70,6 +70,10 @@ export default class Scene {
         this.uniLocations.push(gl.getUniformLocation(program, 'u_circle2'));
 
         this.uniLocations.push(gl.getUniformLocation(program, 'u_cornerUpperRight'));
+
+        for(let i = 0; i < this.cameraTexture.textures.length; i++) {
+            this.uniLocations.push(gl.getUniformLocation(program, `u_videoFrames[${i}]`));
+        }
     }
 
     /**
@@ -91,8 +95,8 @@ export default class Scene {
     /**
      * @param {WebGL2RenderingContext} gl
      */
-    onUpdate(gl) {
-        this.cameraTexture.updateTexture(gl);
+    async onUpdate(gl) {
+        await this.cameraTexture.updateTexture(gl);
         if(this.cameraTexture.isPlayingVideo) {
             this.detectedFaces = this.videoFaceDetector.detect();
             this.processDetection();
@@ -128,5 +132,11 @@ export default class Scene {
             this.hyperbolicTessellation.corner.x,
             this.hyperbolicTessellation.corner.y
         );
+
+        for(let frameIndex = 0; frameIndex < 5; frameIndex++) {
+            gl.activeTexture(gl.TEXTURE0 + frameIndex + 1);
+            gl.bindTexture(gl.TEXTURE_2D, this.cameraTexture.textures[frameIndex]);
+            this.gl.uniform1i(this.uniLocations[i++], frameIndex + 1);
+        }
     }
 }

@@ -19,9 +19,9 @@ window.addEventListener('load', async () => {
     await scene.initialize(renderer.gl, renderer.renderProgram);
 
     const startTime = Date.now();
-    const render = () => {
+    const render = async () => {
         scene.animate(Date.now() - startTime);
-        scene.onUpdate(renderer.gl);
+        await scene.onUpdate(renderer.gl);
         renderer.render(scene);
         window.requestAnimationFrame(render);
     }
