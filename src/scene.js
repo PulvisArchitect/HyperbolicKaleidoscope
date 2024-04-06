@@ -6,6 +6,8 @@ import VideoFaceDetector from './videoFaceDetector.js';
 export default class Scene {
     /** @type {Array<import("@mediapipe/tasks-vision").Detection>} */
     detectedFaces = [];
+    prevFaceRatio = -1;
+    faceRatio = -1;
     constructor() {
         this.uniLocations = [];
         this.cameraTexture = new CameraTexture();
@@ -17,7 +19,35 @@ export default class Scene {
     }
 
     processDetection() {
-        
+        if(this.detectedFaces.length === 0) {
+            return;
+        }
+
+        let maxFaceSize = -1;
+        for(const detection of this.detectedFaces) {
+            maxFaceSize = Math.max(maxFaceSize,
+                                   detection.boundingBox.height);
+        }
+
+        this.prevFaceRatio = this.faceRatio;
+        this.faceRatio = maxFaceSize / (this.cameraTexture.height);
+
+        const defaultScale = 4.5;
+
+        this.faceRatio = (Math.round(this.faceRatio * 100) / 100);
+        console.log(this.faceRatio);
+        const targetScale = defaultScale - 5 * ((this.faceRatio - 0.3));
+
+        // face scaleと対応するスケール基準値を設定しておく
+        // 常にそれに合うようにスケールが上下する
+        // 顔が検出されなくなった時にはデフォルト値に戻る
+        if(Math.abs(targetScale - this.scale) < 0.015) {
+            this.scale = targetScale;
+        } else if(targetScale < this.scale){
+            this.scale -= 0.01;
+        } else {
+            this.scale += 0.01;
+        }
     }
 
     /**
@@ -65,6 +95,7 @@ export default class Scene {
         this.cameraTexture.updateTexture(gl);
         if(this.cameraTexture.isPlayingVideo) {
             this.detectedFaces = this.videoFaceDetector.detect();
+            this.processDetection();
         }
     }
 
