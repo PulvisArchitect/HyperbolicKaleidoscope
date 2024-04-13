@@ -1,6 +1,7 @@
 import CameraTexture from './cameraTexture.js';
 import HyperbolicTessellation from './hyperbolicTessellationBender.js';
 import Vec2 from './vec2.js';
+
 import VideoFaceDetector from './videoFaceDetector.js';
 
 export default class Scene {
@@ -8,6 +9,10 @@ export default class Scene {
     detectedFaces = [];
     prevFaceRatio = -1;
     faceRatio = -1;
+    defaultScale = 4.5;
+    scale = this.defaultScale;
+    enableFaceDetection = true;
+    backgroundColor = [0, 0, 0];
     constructor() {
         this.uniLocations = [];
         this.cameraTexture = new CameraTexture();
@@ -15,7 +20,6 @@ export default class Scene {
         this.videoFaceDetector = new VideoFaceDetector(this.cameraTexture.video);
 
         this.translation = new Vec2(0, 0);
-        this.scale = 4.5;
     }
 
     processDetection() {
@@ -32,11 +36,9 @@ export default class Scene {
         this.prevFaceRatio = this.faceRatio;
         this.faceRatio = maxFaceSize / (this.cameraTexture.height);
 
-        const defaultScale = 4.5;
-
         this.faceRatio = (Math.round(this.faceRatio * 100) / 100);
         //console.log(this.faceRatio);
-        const targetScale = defaultScale - 5 * ((this.faceRatio - 0.3));
+        const targetScale = this.defaultScale - 5 * ((this.faceRatio - 0.3));
 
         // face scaleと対応するスケール基準値を設定しておく
         // 常にそれに合うようにスケールが上下する
@@ -69,6 +71,8 @@ export default class Scene {
         this.uniLocations.push(gl.getUniformLocation(program, 'u_circle1'));
         this.uniLocations.push(gl.getUniformLocation(program, 'u_circle2'));
 
+        this.uniLocations.push(gl.getUniformLocation(program, 'u_backgroundColor'));
+
         this.uniLocations.push(gl.getUniformLocation(program, 'u_cornerUpperRight'));
 
         for(let i = 0; i < this.cameraTexture.textures.length; i++) {
@@ -97,7 +101,7 @@ export default class Scene {
      */
     async onUpdate(gl) {
         await this.cameraTexture.updateTexture(gl);
-        if(this.cameraTexture.isPlayingVideo) {
+        if(this.cameraTexture.isPlayingVideo && this.enableFaceDetection) {
             this.detectedFaces = this.videoFaceDetector.detect();
             this.processDetection();
         }
@@ -126,6 +130,11 @@ export default class Scene {
             this.hyperbolicTessellation.c2.center.x,
             this.hyperbolicTessellation.c2.center.y,
             this.hyperbolicTessellation.c2.r);
+
+        this.gl.uniform3f(this.uniLocations[i++],
+                          this.backgroundColor[0],
+                          this.backgroundColor[1],
+                          this.backgroundColor[2]);
 
         this.gl.uniform2f(
             this.uniLocations[i++],

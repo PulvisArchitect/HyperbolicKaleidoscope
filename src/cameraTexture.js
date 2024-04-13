@@ -16,6 +16,7 @@ export default class CameraTexture {
     /** @type {Array<ImageBitmap>} */
     frames = new Array(5);
     updateTimeMillis = 0;
+    frameDelayMillis = 0;
     constructor() {
         this.video = document.createElement('video');
     }
@@ -60,13 +61,13 @@ export default class CameraTexture {
     async updateTexture(gl) {
         if (this.isPlayingVideo) {
             const frame = await createImageBitmap(this.video);
-            console.log(frame);
+            //console.log(frame);
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
                           gl.RGBA, gl.UNSIGNED_BYTE, frame);
             if(this.updateTimeMillis === 0) {
-                console.log(this.textures);
+                //console.log(this.textures);
                 for(let i = 0; i < this.textures.length; i++) {
                     // const frame = await createImageBitmap(this.video);
                     gl.activeTexture(gl.TEXTURE0 + i + 1);
@@ -77,32 +78,19 @@ export default class CameraTexture {
                     //this.textures[i] = this.texture;
                 }
                 this.updateTimeMillis = Date.now();
-                console.log(this.updateTimeMillis);
+                //console.log(this.updateTimeMillis);
             } else {
-                if(Date.now() - this.updateTimeMillis > 1000) {
-                    //console.log(Date.now() - this.updateTimeMillis);
-                    //console.log('updated!');
+                if(Date.now() - this.updateTimeMillis > this.frameDelayMillis) {
                     for(let i = this.textures.length; i >= 1; i--) {
                         this.frames[i] = this.frames[i - 1];
                     }
                     this.frames[0] = frame;
-                    //console.log(this.frames);
                     for (let i = 0; i < this.textures.length; i++) {
                         gl.activeTexture(gl.TEXTURE0 + i + 1);
                         gl.bindTexture(gl.TEXTURE_2D, this.textures[i]);
                         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.width, this.height, 0,
                                       gl.RGBA, gl.UNSIGNED_BYTE, this.frames[i]);
                     }
-                    // for(let i = this.textures.length; i >= 1; i--) {
-                    //     this.textures[i] = this.textures[i - 1];
-                    // }
-                    // this.textures[0] = this.texture;
-                    // for (let i = 0; this.textures.length; i++) {
-                    //     gl.activeTexture(gl.TEXTURE0 + i + 1);
-                    //     gl.bindTexture(gl.TEXTURE_2D, this.textures[i]);
-                    //     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
-                    //                   gl.RGBA, gl.UNSIGNED_BYTE, this.frames[i]);
-                    // }
                     this.updateTimeMillis = Date.now();
                 }
             }

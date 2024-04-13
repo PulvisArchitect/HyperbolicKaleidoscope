@@ -10,6 +10,7 @@ uniform vec3 u_circle1;
 uniform vec3 u_circle2;
 uniform vec2 u_cornerUpperRight;
 uniform sampler2D u_videoFrames[5];
+uniform vec3 u_backgroundColor;
 
 const float GAMMA = 2.2;
 const float DISPLAY_GAMMA_COEFF = 1. / GAMMA;
@@ -158,7 +159,7 @@ void main() {
         int numInversions;
         vec2 pos = iis(position, isOuter, numInversions);
         if(isOuter) {
-            sum += vec4(0, 0, 0, 1);
+            sum += vec4(u_backgroundColor, 1);
         } else {
             vec2 uv = 1.0 - ((pos - cornerLowerLeft + offset) / cameraSizeOnScreen);
             //sum += vec4(uv, 0, 1);
