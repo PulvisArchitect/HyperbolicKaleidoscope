@@ -3,12 +3,7 @@ import Renderer from './renderer.js';
 import Scene from './scene.js';
 
 window.addEventListener('load', async () => {
-
-    const gui = new GUI();
-    
     const queryParams = new URL(decodeURIComponent(document.location.href)).searchParams;
-    console.log(queryParams.get('hoge'));
-    console.log(queryParams.get('debug') === 'true');
     /** @type {HTMLCanvasElement} */
     const canvas = document.querySelector('#canvas');
     const resizeCanvas = () => {
@@ -24,16 +19,25 @@ window.addEventListener('load', async () => {
 
     renderer.initialize();
     await scene.initialize(renderer.gl, renderer.renderProgram);
-    gui.add(scene, 'defaultScale', 0, 10, 0.1).onChange(
-        /** @param {number} value */
-        value => {
-            scene.scale = value
+
+    if(queryParams.get('debug') === 'true') {
+        const gui = new GUI();
+        gui.add(scene, 'defaultScale', 0, 10, 0.1).listen().onChange(
+            /** @param {number} value */
+            value => {
+                scene.scale = value
+            });
+        gui.add(scene.cameraTexture, 'frameDelayMillis', 0, 1000, 1).listen();
+        gui.add(scene, 'enableFaceDetection').listen().onChange(() => {
+            scene.scale = scene.defaultScale;
         });
-    gui.add(scene.cameraTexture, 'frameDelayMillis', 0, 1000, 1);
-    gui.add(scene, 'enableFaceDetection').onChange(() => {
-        scene.scale = scene.defaultScale;
-    });
-    gui.addColor(scene, 'backgroundColor');
+        gui.addColor(scene, 'backgroundColor').listen();
+    }
+
+    if(queryParams.get('defaultScale') !== null) {
+        const scale = parseFloat(queryParams.get('defaultScale'));
+        scene.defaultScale = scale;
+    }
 
     const startTime = Date.now();
     const render = async () => {
