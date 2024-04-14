@@ -8,6 +8,7 @@ export default class Scene {
     /** @type {Array<import("@mediapipe/tasks-vision").Detection>} */
     detectedFaces = [];
     prevFaceRatio = -1;
+    faceRatioArray = new Array(30).fill(0);
     faceRatio = -1;
     defaultScale = 4.5;
     scale = this.defaultScale;
@@ -37,6 +38,9 @@ export default class Scene {
         this.faceRatio = maxFaceSize / (this.cameraTexture.height);
 
         this.faceRatio = (Math.round(this.faceRatio * 100) / 100);
+        this.faceRatioArray.push(this.faceRatio);
+        this.faceRatioArray.shift();
+        this.faceRatio = this.faceRatioArray.reduce((a, b) => a + b, 0) / this.faceRatioArray.length;
         //console.log(this.faceRatio);
         const targetScale = this.defaultScale - 5 * ((this.faceRatio - 0.3));
 

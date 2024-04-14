@@ -32,6 +32,8 @@ window.addEventListener('load', async () => {
             scene.scale = scene.defaultScale;
         });
         gui.addColor(scene, 'backgroundColor').listen();
+        gui.add(scene, 'faceRatio', 0, 1).listen().disable();
+        gui.add(scene, 'scale', 0, 5).listen().disable();
     }
 
     if(queryParams.get('defaultScale') !== null) {
@@ -40,10 +42,16 @@ window.addEventListener('load', async () => {
     }
 
     const startTime = Date.now();
+    let prevMillis = Date.now();
+    const fps = 60
+    const stepMillis = (1 / fps) * 1000;
     const render = async () => {
-        scene.animate(Date.now() - startTime);
-        await scene.onUpdate(renderer.gl);
-        renderer.render(scene);
+        if ((Date.now() - prevMillis) > stepMillis) {
+            scene.animate(Date.now() - startTime);
+            await scene.onUpdate(renderer.gl);
+            renderer.render(scene);
+            prevMillis = Date.now();
+        }
         window.requestAnimationFrame(render);
     }
     render();
