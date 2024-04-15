@@ -31,15 +31,17 @@ window.addEventListener('load', async () => {
         gui.add(scene, 'enableFaceDetection').listen().onChange(() => {
             scene.scale = scene.defaultScale;
         });
+        gui.add(scene, 'downloadParameters');
         gui.addColor(scene, 'backgroundColor').listen();
         gui.add(scene, 'faceRatio', 0, 1).listen().disable();
         gui.add(scene, 'scale', 0, 5).listen().disable();
     }
+    console.log(queryParams.get('debug'));
 
-    if(queryParams.get('defaultScale') !== null) {
-        const scale = parseFloat(queryParams.get('defaultScale'));
-        scene.defaultScale = scale;
-    }
+    setNumberParamIfExists(queryParams, scene, 'defaultScale');
+    setNumberParamIfExists(queryParams, scene.cameraTexture, 'frameDelayMillis');
+    setBooleanParamIfExists(queryParams, scene, 'enableFaceDetection');
+    setArrayParamIfExists(queryParams, scene, 'backgroundColor', 3);
 
     const startTime = Date.now();
     let prevMillis = Date.now();
@@ -62,3 +64,52 @@ window.addEventListener('load', async () => {
         window.setTimeout(resizeCanvas, 500);
     });
 });
+
+/**
+ * @param {URLSearchParams} searchParams
+ * @param {object} obj
+ * @param {string} propertyName
+ */
+function setNumberParamIfExists(searchParams, obj, propertyName) {
+    if(searchParams.get(propertyName) !== null) {
+        const value = parseFloat(searchParams.get(propertyName));
+        if(isNaN(value)) {
+            obj[propertyName] = value;
+        }
+    }
+}
+
+/**
+ * @param {URLSearchParams} searchParams
+ * @param {object} obj
+ * @param {string} propertyName
+ */
+function setBooleanParamIfExists(searchParams, obj, propertyName) {
+    if(searchParams.get(propertyName) !== null) {
+        const value = searchParams.get(propertyName);
+        if(value === 'true') {
+            obj[propertyName] = true;
+        } else if(value === 'false') {
+            obj[propertyName] = false;
+        }
+    }
+}
+
+/**
+ * @param {URLSearchParams} searchParams
+ * @param {object} obj
+ * @param {string} propertyName
+ * @param {number} length
+ */
+function setArrayParamIfExists(searchParams, obj, propertyName, length) {
+    if(searchParams.get(propertyName) !== null) {
+        try {
+            const value = JSON.parse(searchParams.get(propertyName));
+            if(Array.isArray(value) && value.length === length) {
+                obj[propertyName] = value;
+            }
+        } catch(e) {
+            console.log(e);
+        }
+    }
+}

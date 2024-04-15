@@ -152,4 +152,25 @@ export default class Scene {
             this.gl.uniform1i(this.uniLocations[i++], frameIndex + 1);
         }
     }
+
+    downloadParameters() {
+        const params = {
+            'applicationUrl': 'https://pulvis.jp/HyperbolicKaleidoscope',
+            'params': {
+                debug: true,
+                defaultScale: this.defaultScale,
+                frameDelayMillis: this.cameraTexture.frameDelayMillis,
+                backgroundColor: this.backgroundColor,
+                enableFaceDetection: this.enableFaceDetection
+            }
+        }
+        const blob = new Blob([JSON.stringify(params, null, '    ')], {type: 'application/json'});
+
+        const a = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        a.href = url;
+        a.download = 'settings.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
 }
