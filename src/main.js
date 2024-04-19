@@ -43,6 +43,16 @@ window.addEventListener('load', async () => {
     setBooleanParamIfExists(queryParams, scene, 'enableFaceDetection');
     setArrayParamIfExists(queryParams, scene, 'backgroundColor', 3);
 
+    if(queryParams.has('loggingURL')) {
+        const url = queryParams.get('loggingURL');
+        await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify({
+                text: 'Lost Mirrorsが起動されました'
+            })
+        });
+    }
+
     const startTime = Date.now();
     let prevMillis = Date.now();
     const fps = 60
