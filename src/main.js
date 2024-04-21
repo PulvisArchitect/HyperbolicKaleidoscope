@@ -4,6 +4,21 @@ import Scene from './scene.js';
 
 window.addEventListener('load', async () => {
     const queryParams = new URL(decodeURIComponent(document.location.href)).searchParams;
+    let loggingInfo = undefined;
+    let sceneParams = {};
+    let enableDebugMode = false;
+    if (queryParams.has('params')) {
+        const params = queryParams.get('params');
+        const obj = JSON.parse(atob(params));
+        try {
+            enableDebugMode = obj['debug'];
+            loggingInfo = obj['logging'];
+            sceneParams = obj['scene'];
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     /** @type {HTMLCanvasElement} */
     const canvas = document.querySelector('#canvas');
     const resizeCanvas = () => {
@@ -21,7 +36,7 @@ window.addEventListener('load', async () => {
     await scene.initialize(renderer.gl, renderer.renderProgram);
 
     const startTime = Date.now();
-    if(queryParams.get('debug') === 'true') {
+    if(queryParams.get('debug') === 'true' || enableDebugMode) {
         const gui = new GUI();
         gui.add(scene, 'defaultScale', 0, 10, 0.1).listen().onChange(
             /** @param {number} value */
@@ -50,16 +65,9 @@ window.addEventListener('load', async () => {
     setBooleanParamIfExists(queryParams, scene, 'enableFaceDetection');
     setArrayParamIfExists(queryParams, scene, 'backgroundColor', 3);
 
-    if(queryParams.has('loggingURL')) {
-        const url = queryParams.get('loggingURL');
-        await fetch(url, {
-            method: 'POST',
-            body: JSON.stringify({
-                text: 'Lost Mirrorsが起動されました'
-            })
-        });
-    }
-
+    postMessage(loggingInfo, 'Hyperbolic Kaleidoscopeが正しく読み込まれました. ').catch((error) => {
+        console.error(error);
+    });
     let prevMillis = Date.now();
     const fps = 60
     const stepMillis = (1 / fps) * 1000;
@@ -128,4 +136,30 @@ function setArrayParamIfExists(searchParams, obj, propertyName, length) {
             console.log(e);
         }
     }
+}
+
+/**
+ * @param {object} loggingInfo
+ * @param {string} message
+ */
+async function postMessage(loggingInfo, message) {
+    fetch(loggingInfo.url, {
+        method: 'POST',
+        body: JSON.stringify({
+            text: `${loggingInfo.clientName}: ${message}`
+        })
+    });
+}
+
+/**
+ * @param {object} loggingInfo
+ * @param {Error} error
+ */
+function postError(loggingInfo, error) {
+    fetch(loggingInfo.url, {
+        method: 'POST',
+        body: JSON.stringify({
+            text: `${loggingInfo.clientName}: Hyperbolic Kaleidoscopeでエラーが発生しました. \n${error.name}: ${error.message}`
+        })
+    });
 }
