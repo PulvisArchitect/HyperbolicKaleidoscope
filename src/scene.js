@@ -16,7 +16,7 @@ export default class Scene {
     scale = this.defaultMinScale;
     speedFactor = 1.0;
     enableFaceDetection = false;
-    enableAnimation = false;
+    enableAnimation = true;
     backgroundColor = [0, 0, 0];
     timeSlide = 0;
     constructor() {
