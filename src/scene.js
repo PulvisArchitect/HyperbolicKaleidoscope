@@ -10,10 +10,15 @@ export default class Scene {
     prevFaceRatio = -1;
     faceRatioArray = new Array(30).fill(0);
     faceRatio = -1;
-    defaultScale = 4.5;
-    scale = this.defaultScale;
-    enableFaceDetection = true;
+    defaultMinScale = 2.0;
+    defaultMaxScale = 3.48;
+    defaultScale = 3.48;
+    scale = this.defaultMinScale;
+    speedFactor = 1.0;
+    enableFaceDetection = false;
+    enableAnimation = false;
     backgroundColor = [0, 0, 0];
+    timeSlide = 0;
     constructor() {
         this.uniLocations = [];
         this.cameraTexture = new CameraTexture();
@@ -88,12 +93,24 @@ export default class Scene {
      * @param {number} elapsedTimeMillis
      */
     animate(elapsedTimeMillis) {
-        let t = elapsedTimeMillis / 100;
+        if(!this.enableAnimation) {
+            return;
+        }
+        this.computeCircles(elapsedTimeMillis);
+    }
+
+    /**
+     * @param {number} time
+     */
+    computeCircles(time) {
+        console.log(time);
+        let t = (time * this.speedFactor) / 100;
         const limit = 617;
-        t = t % limit * 2;
+        t = (t + this.timeSlide) % (limit * 2);
         if(t >= limit) {
             t = limit - (t - limit);
         }
+        this.scale = this.defaultMinScale + (this.defaultMaxScale - this.defaultMinScale) * (t / 617);
         //t = 617
         //console.log(t);
         this.hyperbolicTessellation.bendY = - t / 1000;

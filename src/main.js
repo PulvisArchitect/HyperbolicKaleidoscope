@@ -20,6 +20,7 @@ window.addEventListener('load', async () => {
     renderer.initialize();
     await scene.initialize(renderer.gl, renderer.renderProgram);
 
+    const startTime = Date.now();
     if(queryParams.get('debug') === 'true') {
         const gui = new GUI();
         gui.add(scene, 'defaultScale', 0, 10, 0.1).listen().onChange(
@@ -31,12 +32,18 @@ window.addEventListener('load', async () => {
         gui.add(scene, 'enableFaceDetection').listen().onChange(() => {
             scene.scale = scene.defaultScale;
         });
-        gui.add(scene, 'downloadParameters');
+        gui.add(scene, 'enableAnimation');
         gui.addColor(scene, 'backgroundColor').listen();
+        gui.add(scene, 'speedFactor', 0, 10);
+        gui.add(scene, 'timeSlide', 0, 617).listen().onChange(() => {
+            scene.computeCircles(0);
+            renderer.render(scene);
+        })
+
+        gui.add(scene, 'downloadParameters');
         gui.add(scene, 'faceRatio', 0, 1).listen().disable();
         gui.add(scene, 'scale', 0, 5).listen().disable();
     }
-    console.log(queryParams.get('debug'));
 
     setNumberParamIfExists(queryParams, scene, 'defaultScale');
     setNumberParamIfExists(queryParams, scene.cameraTexture, 'frameDelayMillis');
@@ -53,7 +60,6 @@ window.addEventListener('load', async () => {
         });
     }
 
-    const startTime = Date.now();
     let prevMillis = Date.now();
     const fps = 60
     const stepMillis = (1 / fps) * 1000;
