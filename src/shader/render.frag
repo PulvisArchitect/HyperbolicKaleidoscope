@@ -51,7 +51,7 @@ vec2 circleInversion(const vec2 pos, const vec3 circle){
     return (p * circle.z * circle.z)/(d * d) + circle.xy;
 }
 
-const int MAX_ITERATIONS = 20;
+const int MAX_ITERATIONS = 10;
 vec2 iis(vec2 pos, out bool isOuter, out int numInversions) {
     vec3 c3 = vec3(-u_circle1.xy, u_circle1.z);
     vec3 c4 = vec3(-u_circle2.xy, u_circle2.z);
@@ -105,7 +105,7 @@ vec2 iis(vec2 pos, out bool isOuter, out int numInversions) {
     return pos;
 }
 
-const float MAX_SAMPLES = 100.;
+const float MAX_SAMPLES = 20.;
 out vec4 outColor;
 void main() {
     vec4 sum = vec4(0);
